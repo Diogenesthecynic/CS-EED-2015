@@ -3,7 +3,7 @@
 html, body {
     margin: 0;
     padding: 0;
-    background-image: url('/eed/images/Grass.gif');
+    background-image: url('images/Grass.gif');
     color: #333;
     font-family: Arial;
 }
@@ -57,14 +57,14 @@ html, body {
     position: absolute;
     text-align: center;
     font-size: 1.33em;
-    background-image: url('/eed/images/House.png');
+    background-image: url('images/House.png');
     background-size: 100% 100%;
 }
 
 #gui .building.source {
     font-size: 1.75em;
     z-index: 7;
-    background-image: url('/eed/images/Tower.png');
+    background-image: url('images/Tower.png');
     box-sizing: border-box;
 }
 
@@ -95,15 +95,15 @@ html, body {
 }
 
 #gui .scenery.tree {
-    background-image: url('/eed/images/Tree.png');
+    background-image: url('images/Tree.png');
 }
 
 #gui .scenery.flower {
     background-size: auto;
-    background-image: url('/eed/images/Flower A.png');
+    background-image: url('images/Flower A.png');
 }
 #gui .scenery.flower:nth-of-type(2n) {
-    background-image: url('/eed/images/Flower B.png');
+    background-image: url('images/Flower B.png');
 }
 
 #gui .floating {
