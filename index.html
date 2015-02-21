@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html lang="en-us">
+    <head>
+        <meta charset="utf-8">
+		<link href="index.css" rel="stylesheet">
+		<title>EED Amazon Drone Delivery</title>
+    </head>
+    <body>
+    
+        <div id="container">
+        
+            <section id="gui">
+                
+                <div id="display">Loading...</div>
+            
+                <div id="scoring">
+                    <div id="score"></div>
+                    <br />
+                    <aside id="scoreBlurb">
+                        When you select a path, the overall distance will show here. Lower is better!
+                    </aside>
+                </div>
+                
+            </section>
+            
+            <section id="sidebar">
+                <h1>Amazon Drone Delivery</h1>
+                
+                <select id="selectDifficulty">
+                    Loading...
+                </select>
+                
+                <div id="sidebarDraggingArea">
+                    <div id="sidebarDragging">
+                        
+                        <hr />
+                        
+                        <ol id="sidebarOptions">
+                            Loading...
+                        </ol>
+                        
+                    </div>
+                </div>
+                
+                <div id="sidebarDescription">
+                    Drag the letters around to choose what order your drone visits the buildings!
+                </div>
+                
+                <hr />
+                
+                <button id="sidebarPlay">Play!</button>
+
+                <hr />
+                
+                <div id="stats">
+                    <div id="statCargo"></div>
+                    <div id="statWeight"></div>
+                </div>
+            </section>
+        
+        </div>
+    
+        <footer>
+            
+        </footer>
+        
+        <script type="text/javascript" src="jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="jquery-ui/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="index.js"></script>
+    </body>
+</html>
