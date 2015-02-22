@@ -12,84 +12,84 @@ $(document).ready((function (schema) {
         displayScoreBlurb = container.find("#scoreBlurb"),
         statCargo = container.find("#statCargo"),
         statWeight = container.find("#statWeight"),
-        
+
         displayWidth = display.width(),
         displayHeight = display.height(),
-        
+
         displayWidthMultiplier,
         displayHeightMultiplier,
-        
+
         buildingWidth = schema.buildingWidth || (223 * .75),
         buildingHeight = schema.buildingHeight || (201 * .75),
-        
+
         sceneryWidth = schema.sceneryWidth || (43 * 1.5),
         sceneryHeight = schema.sceneryHeight || (52 * 1.5),
-        
+
         sourceWidth = schema.sourceWidth || 151,
         sourceHeight = schema.sourceHeight || 227,
-        
+
         drone,
-        
+
         droneWidth = schema.droneWidth || 56,
         droneHeight = schema.droneHeight || 56,
         droneSpeed = schema.droneSpeed || 5,
         droneWeight = schema.droneWeight || 1,
         droneDelay = schema.droneDelay || 280,
-        
+
         cargoSpeed = schema.cargoSpeed || 3,
         cargoDelay = schema.cargoDelay || 7,
-        
+
         framerate = 16,
-        
+
         stages,
-        
+
         stageNames,
-        
+
         stageCurrent,
-        
+
         stageSolution,
-        
+
         interval;
-    
+
     /**
      * 
      */
     var reset = function (schema) {
         var i = 0;
-        
+
         stages = schema.stages;
         stageNames = Object.keys(stages);
-        
+
         setDisplay();
-        
+
         selectDifficulty.value = schema.startingDifficulty;
-        
+
         Array.prototype.forEach.call(selectDifficulty.children, function (el) {
-            if(el.value == schema.startingDifficulty) {
+            if (el.value == schema.startingDifficulty) {
                 el.selected = true;
                 selectDifficulty.selectedIndex = i;
             }
             i += 1;
         });
-        
+
         startGame(schema.startingDifficulty);
     };
-    
-    
+
+
     /* Gui setup
     */
-    
+
     /**
      * 
      */
     var setDisplay = function () {
         setTriggers();
         setSelectOptions();
-        
+
         resetDisplayScoringClasses();
         displayScoreBlurb.attr("textOriginal", displayScoreBlurb.text());
     };
-    
+
     /**
      * 
      */
@@ -98,7 +98,7 @@ $(document).ready((function (schema) {
             .removeClass("solved")
             .removeClass("unsolved");
     };
-    
+
     /**
      * 
      */
@@ -106,18 +106,18 @@ $(document).ready((function (schema) {
         select.change(setOption);
         buttonPlay.click(startPlaying);
     };
-    
+
     /**
      * 
      */
     var setSelectOptions = function () {
         select.empty();
-        
+
         stageNames.forEach(function (name) {
             select.append(new Option(name));
         });
     };
-    
+
     /**
      * 
      */
@@ -127,11 +127,11 @@ $(document).ready((function (schema) {
         displayScore.text("");
         displayScoreBlurb.text(displayScoreBlurb.attr("textOriginal"));
     };
-        
-    
+
+
     /* Gameplay setup
     */
-    
+
     /**
      * 
      */
@@ -139,11 +139,11 @@ $(document).ready((function (schema) {
         stageCurrent = stages[difficulty];
         populateGrid();
         populateSidebar();
-        
+
         stageSolution = computeSolution(stageCurrent);
         console.log("The solution is", stageSolution);
     };
-    
+
     /**
      * 
      */
@@ -155,13 +155,13 @@ $(document).ready((function (schema) {
         populateGridLines();
         populateGridBuildings();
     };
-    
+
     /**
      * 
      */
     var populateGridLines = function () {
         var i, j;
-        
+
         for (i = 1; i < stageCurrent.height; i += 1) {
             display.append(
                 $("<div>", {
@@ -171,7 +171,7 @@ $(document).ready((function (schema) {
                 })
             );
         }
-        
+
         for (i = 1; i < stageCurrent.width; i += 1) {
             display.append(
                 $("<div>", {
@@ -182,7 +182,7 @@ $(document).ready((function (schema) {
             );
         }
     };
-    
+
     /**
      * 
      */
@@ -190,19 +190,19 @@ $(document).ready((function (schema) {
         for (var key in stageCurrent.buildings) {
             display.append(createBuilding(key, stageCurrent.buildings[key]));
         }
-        
+
         display.append(createBuilding("", {
             "position": stageCurrent.source,
             "source": true
         }));
     };
-    
+
     /**
      * 
      */
     var createBuilding = function (name, building) {
         var className, width, height;
-        
+
         if (building.source) {
             className = "building source";
             width = sourceWidth;
@@ -213,7 +213,7 @@ $(document).ready((function (schema) {
             height = buildingHeight;
             className = "building";
         }
-        
+
         return $("<div>", {
             "html": name,
             "class": className
@@ -224,23 +224,23 @@ $(document).ready((function (schema) {
             "margin-left": Math.round(building.position.x * displayWidthMultiplier - buildingWidth / 2) + "px"
         });
     };
-    
+
     /**
      * 
      */
     var populateGridScenery = function () {
         var listings = stageCurrent.scenery,
             listing, type, i;
-        
+
         for (type in listings) {
             listing = listings[type];
-            
+
             for (i in listing) {
                 display.append(createScenery(type, listing[i], i));
             }
         }
     };
-    
+
     /**
      * 
      */
@@ -254,29 +254,29 @@ $(document).ready((function (schema) {
             "margin-left": Math.round(position[0] * displayWidthMultiplier - sceneryWidth / 2) + "px"
         });
     };
-    
+
     /**
      * 
      */
     var populateSidebar = function () {
         populateSidebarOptions();
     };
-    
+
     /**
      * 
      */
     var populateSidebarOptions = function () {
         sidebarOptions.empty();
-        
+
         for (var key in stageCurrent.buildings) {
             sidebarOptions.append(createSidebarOption(key, stageCurrent.buildings[key]));
         }
-        
+
         sidebarOptions.sortable({
             "containment": sidebarDraggingArea
         });
     };
-    
+
     /**
      * 
      */
@@ -286,11 +286,11 @@ $(document).ready((function (schema) {
             "text": name
         });
     };
-    
-    
+
+
     /* Gameplay running
     */
-    
+
     /**
      * 
      */
@@ -298,20 +298,20 @@ $(document).ready((function (schema) {
         var actions = sidebarOptions.children().toArray().map(function (child) {
             return child.textContent;
         });
-        
+
         playActions(actions);
     };
-    
+
     /**
      * 
      */
     var playActions = function (actions) {
         var total = computeDistance(actions);
-        
+
         placeDrone(stageCurrent.source);
         moveDroneTo(actions, 0);
         updateStatsDisplay();
-        
+
         if (stageSolution.distance === total) {
             displayScore.text("Correct!");
             displayScoring
@@ -326,7 +326,7 @@ $(document).ready((function (schema) {
             displayScoreBlurb.text("Lower is better! The best is " + stageSolution.distance + ".");
         }
     };
-    
+
     /**
      * 
      */
@@ -337,24 +337,24 @@ $(document).ready((function (schema) {
             }, 0),
             weightCurrent = weightTotal + droneWeight,
             distance, start, end, i;
-        
+
         for (i = 0; i < actions.length - 1; i += 1) {
             start = stageCurrent.buildings[actions[i]];
             end = stageCurrent.buildings[actions[i + 1]];
             distance = distanceBetween(start.position, end.position);
-            
+
             total += distance * weightCurrent;
             weightCurrent -= start.weight;
         }
-        
+
         distance = distanceBetween(end.position, stageCurrent.source);
         total += distance * weightCurrent;
-        
+
         total = Math.round(total * 100) / 100;
-        
+
         return total;
     };
-    
+
     /**
      * 
      */
@@ -363,7 +363,7 @@ $(document).ready((function (schema) {
             places = Object.keys(schema.buildings),
             permutations = generatePermutationComputer()(places),
             distance, record, i;
-        
+
         for (i = permutations.length - 1; i >= 0; i -= 1) {
             distance = computeDistance(permutations[i]);
             if (distance < best) {
@@ -371,14 +371,14 @@ $(document).ready((function (schema) {
                 record = permutations[i];
             }
         }
-        
+
         return {
             "places": places,
             "order": record,
             "distance": best
         };
     };
-    
+
     /**
      * 
      */
@@ -387,15 +387,15 @@ $(document).ready((function (schema) {
             drone.die();
             clearInterval(interval);
         }
-        
+
         drone = new Drone({
             "x": (position.x * displayWidthMultiplier - droneWidth / 2),
             "y": (position.y * displayHeightMultiplier - droneHeight / 2)
         });
-        
+
         display.append(drone.element);
     }
-    
+
     /**
      * 
      */
@@ -405,18 +405,18 @@ $(document).ready((function (schema) {
                 "y": Math.round(building.position.y * displayHeightMultiplier - droneHeight / 2),
                 "x": Math.round(building.position.x * displayWidthMultiplier - droneWidth / 2)
             };
-        
+
         drone.face(endPosition);
         interval = setInterval(function () {
             var reachedEnd = drone.moveTo(endPosition);
-            
+
             if (reachedEnd) {
                 clearInterval(interval);
-                
+
                 drone.cargoLeft -= 1;
                 drone.weightLeft -= building.weight;
                 updateStatsDisplay();
-                
+
                 if (step >= actions.length - 1) {
                     setTimeout(moveDroneToSource, droneDelay);
                 } else {
@@ -427,26 +427,26 @@ $(document).ready((function (schema) {
             }
         }, framerate);
     };
-    
+
     /**
      * 
      */
     var moveDroneToSource = function () {
         var endPosition = {
-                "y": Math.round(stageCurrent.source.y * displayHeightMultiplier - droneHeight / 2),
-                "x": Math.round(stageCurrent.source.x * displayWidthMultiplier - droneWidth / 2)
-            };
-        
+            "y": Math.round(stageCurrent.source.y * displayHeightMultiplier - droneHeight / 2),
+            "x": Math.round(stageCurrent.source.x * displayWidthMultiplier - droneWidth / 2)
+        };
+
         drone.face(endPosition);
         interval = setInterval(function () {
             var reachedEnd = drone.moveTo(endPosition);
-            
+
             if (reachedEnd) {
                 clearInterval(interval);
             }
         }, framerate);
     };
-    
+
     /**
      * 
      */
@@ -462,7 +462,7 @@ $(document).ready((function (schema) {
                 statCargo.text(drone.cargoLeft + " deliveries left.");
                 break;
         }
-        
+
         switch (drone.weightLeft) {
             case 0:
                 statWeight.text("");
@@ -475,11 +475,11 @@ $(document).ready((function (schema) {
                 break;
         }
     };
-    
-    
+
+
     /* Utilities
     */
-    
+
     /**
      * 
      */
@@ -487,17 +487,17 @@ $(document).ready((function (schema) {
         displayWidthMultiplier = display.width() / stageCurrent.width;
         displayHeightMultiplier = display.height() / stageCurrent.height;
     };
-    
+
     /**
      * 
      */
     var distanceBetween = function (start, end) {
         var x = Math.abs(start.x - end.x),
             y = Math.abs(start.y - end.y);
-        
-        return Math.sqrt(x*x + y*y);    
+
+        return Math.sqrt(x * x + y * y);
     }
-    
+
     /**
      * http://stackoverflow.com/questions/9960908/permutations-in-javascript
      */
@@ -520,40 +520,40 @@ $(document).ready((function (schema) {
             return permArr;
         };
     };
-    
-    
+
+
     /* Floating classes
     */
-    
+
     /**
      * 
      */
     function Floater() {
-        
+
     }
-    
+
     /**
      * 
      */
     Floater.prototype.reset = function (position) {
         this.position = position;
         this.element = $("<div>", {
-                "class": "floating drone"
-            }).css({
-                "width": droneWidth + "px",
-                "height": droneHeight + "px",
-                "margin-top": position.y + "px",
-                "margin-left": position.x + "px",
-            });
+            "class": "floating drone"
+        }).css({
+            "width": droneWidth + "px",
+            "height": droneHeight + "px",
+            "margin-top": position.y + "px",
+            "margin-left": position.x + "px",
+        });
     };
-    
+
     /**
      * 
      */
     Floater.prototype.die = function () {
         this.element.remove();
     }
-    
+
     /**
      * 
      */
@@ -563,20 +563,20 @@ $(document).ready((function (schema) {
             this.position.y + (y || 0)
         );
     }
-    
+
     /**
      * 
      */
     Floater.prototype.setPosition = function (x, y) {
         this.position.x = x;
         this.position.y = y;
-        
+
         this.element.css({
             "margin-top": y + "px",
             "margin-left": x + "px"
         });
     };
-    
+
     /**
      * 
      */
@@ -584,27 +584,27 @@ $(document).ready((function (schema) {
         if (this.position.x === end.x && this.position.y === end.y) {
             return true;
         }
-        
+
         var dx = end.x - this.position.x,
             dy = end.y - this.position.y,
             angle = Math.atan(dy / dx),
             hypotenuse = Math.min(Math.sqrt(dx * dx + dy * dy), this.speed),
             dxNew = Math.abs(Math.cos(angle) * hypotenuse),
             dyNew = Math.abs(Math.sin(angle) * hypotenuse);
-        
+
         if (dx < 0) {
             dxNew *= -1;
         }
-        
+
         if (dy < 0) {
             dyNew *= -1;
         }
-        
+
         this.shiftPosition(dxNew, dyNew);
-        
+
         return Math.abs(dx) < .01 && Math.abs(dy) < .01;
     };
-    
+
     /**
      * 
      */
@@ -612,20 +612,20 @@ $(document).ready((function (schema) {
         var dx = end.x - this.position.x,
             dy = end.y - this.position.y,
             angle = Math.atan(dy / dx) * 180 / Math.PI;
-        
+
         this.element.css("transform", "rotate(" + angle + "deg");
     }
-    
+
     /**
      * 
      */
     function Drone(position) {
         this.reset(position);
-        
+
         this.image = $("<img>")
                 .attr("src", "images/Drone.png")
         this.element.append(this.image);
-        
+
         for (var i = 0; i < 4; i += 1) {
             this.element.append(
                 $("<img>")
@@ -633,10 +633,10 @@ $(document).ready((function (schema) {
                     .attr("src", "images/Drone-Blade.gif")
             );
         }
-        
+
         this.label = $("<div>").addClass("label")
         this.element.append(this.label);
-        
+
         this.cargoLeft = Object.keys(stageCurrent.buildings).length;
         this.weightLeft = Object.keys(stageCurrent.buildings)
             .map(function (key) {
@@ -646,10 +646,10 @@ $(document).ready((function (schema) {
                 return previous + current;
             });
     }
-    
+
     Drone.prototype = new Floater();
     Drone.prototype.speed = droneSpeed;
-    
+
     /**
      * 
      */
@@ -658,7 +658,7 @@ $(document).ready((function (schema) {
         drone.
         cargo.drop();
     };
-    
+
     /**
      * 
      */
@@ -666,9 +666,9 @@ $(document).ready((function (schema) {
         this.reset(position);
         this.dropping = false;
     }
-    
+
     Cargo.prototype = new Floater();
-    
+
     /**
      * 
      */
@@ -676,14 +676,14 @@ $(document).ready((function (schema) {
         this.dropping = setInterval(function () {
             this.shiftPosition(1);
         }, cargoSpeed);
-        
+
         setTimeout(
-            clearTimeout.bind(undefined, this.dropping), 
+            clearTimeout.bind(undefined, this.dropping),
             cargoSpeed * cargoDelay
         );
     };
-    
-    
+
+
     reset(schema || {});
 })({
     "startingDifficulty": "intro",
@@ -712,48 +712,48 @@ $(document).ready((function (schema) {
                 }
             },
             "scenery": {
-                "flower": [ 
-                    [4.78,0.54], 
-                    [2.5,1.72], 
-                    [5.47,2.87], 
-                    [0.1,2], 
-                    [5.14,0.14], 
-                    [3.5,2.77], 
-                    [3.01,1.11], 
-                    [4.28,2.53], 
-                    [2.54,1.78], 
-                    [4.57,2.84], 
-                    [0.99,1.08], 
-                    [1.55,1.23], 
-                    [3.7,0.97], 
-                    [0.7,2.32], 
-                    [4.12,2.12], 
-                    [3.05,0.76], 
-                    [3.3,1.65], 
-                    [3.98,1.77], 
-                    [5.84,0.57], 
-                    [4.74,1.36], 
-                    [5.86,2.33], 
-                    [4.24,1.39], 
-                    [4,0.45], 
-                    [4.78,0.65], 
-                    [5.8,2.86], 
-                    [2.6,2.4], 
-                    [3.59,1.46], 
-                    [5.46,0.36], 
-                    [4.7,1.09], 
-                    [2.77,0.24], 
-                    [5.24,2.06], 
-                    [1.96,0.53], 
-                    [1.28,2.15], 
-                    [1.03,1.74], 
-                    [2.09,2.36], 
-                    [2.83,1.9], 
-                    [2.6,2.75], 
-                    [2.48,1.35], 
-                    [2.15,1.86], 
-                    [5.89,1.59], 
-                    [5.34,1.08]
+                "flower": [
+                    [4.78, 0.54],
+                    [2.5, 1.72],
+                    [5.47, 2.87],
+                    [0.1, 2],
+                    [5.14, 0.14],
+                    [3.5, 2.77],
+                    [3.01, 1.11],
+                    [4.28, 2.53],
+                    [2.54, 1.78],
+                    [4.57, 2.84],
+                    [0.99, 1.08],
+                    [1.55, 1.23],
+                    [3.7, 0.97],
+                    [0.7, 2.32],
+                    [4.12, 2.12],
+                    [3.05, 0.76],
+                    [3.3, 1.65],
+                    [3.98, 1.77],
+                    [5.84, 0.57],
+                    [4.74, 1.36],
+                    [5.86, 2.33],
+                    [4.24, 1.39],
+                    [4, 0.45],
+                    [4.78, 0.65],
+                    [5.8, 2.86],
+                    [2.6, 2.4],
+                    [3.59, 1.46],
+                    [5.46, 0.36],
+                    [4.7, 1.09],
+                    [2.77, 0.24],
+                    [5.24, 2.06],
+                    [1.96, 0.53],
+                    [1.28, 2.15],
+                    [1.03, 1.74],
+                    [2.09, 2.36],
+                    [2.83, 1.9],
+                    [2.6, 2.75],
+                    [2.48, 1.35],
+                    [2.15, 1.86],
+                    [5.89, 1.59],
+                    [5.34, 1.08]
                 ],
                 "tree": [
                     [0, .7],
@@ -817,48 +817,48 @@ $(document).ready((function (schema) {
             },
             "scenery": {
                 "flower": [
-                    [0.75,2.1999999999999997],
-                    [1.8699999999999997,2.03],
-                    [0.91,3.2199999999999998],
-                    [5.49,1.54],
-                    [1.31,2.02],
-                    [3.4099999999999997,3.6599999999999997],
-                    [2.06,1.85],
-                    [3.9999999999999996,2.6],
-                    [3.1,3.3899999999999997],
-                    [2.44,1.9299999999999997],
-                    [2.48,2.83],
-                    [2.2199999999999998,0.22999999999999998],
-                    [5.41,3.58],
-                    [6.180000000000001,3.2199999999999998],
-                    [5.57,0.26],
-                    [4.53,2.84],
-                    [4.32,0.64],
-                    [3.1,3.6599999999999997],
-                    [0.9,2.53],
-                    [4.550000000000001,0.48],
-                    [2.4,2.06],
-                    [5.45,3.04],
-                    [3.27,2.42],
-                    [2.15,0.52],
-                    [6.8100000000000005,3.44],
-                    [3.83,2.17],
-                    [1.19,3.17],
-                    [3.8799999999999994,2.13],
-                    [5.91,0.36],
-                    [5.430000000000001,1.1],
-                    [2.6999999999999997,2.83],
-                    [3.7199999999999998,0.03],
-                    [4.11,2.28],
-                    [0.53,2.36],
-                    [0.89,3.4299999999999997],
-                    [5.800000000000001,3.84],
-                    [1.3900000000000001,1.08],
-                    [3.2199999999999998,0.9800000000000001],
-                    [0.47,1.6],
-                    [0.03999999999999998,0.7999999999999999],
-                    [0.89,3.28],
-                    [2.9299999999999997,2.04],
+                    [0.75, 2.1999999999999997],
+                    [1.8699999999999997, 2.03],
+                    [0.91, 3.2199999999999998],
+                    [5.49, 1.54],
+                    [1.31, 2.02],
+                    [3.4099999999999997, 3.6599999999999997],
+                    [2.06, 1.85],
+                    [3.9999999999999996, 2.6],
+                    [3.1, 3.3899999999999997],
+                    [2.44, 1.9299999999999997],
+                    [2.48, 2.83],
+                    [2.2199999999999998, 0.22999999999999998],
+                    [5.41, 3.58],
+                    [6.180000000000001, 3.2199999999999998],
+                    [5.57, 0.26],
+                    [4.53, 2.84],
+                    [4.32, 0.64],
+                    [3.1, 3.6599999999999997],
+                    [0.9, 2.53],
+                    [4.550000000000001, 0.48],
+                    [2.4, 2.06],
+                    [5.45, 3.04],
+                    [3.27, 2.42],
+                    [2.15, 0.52],
+                    [6.8100000000000005, 3.44],
+                    [3.83, 2.17],
+                    [1.19, 3.17],
+                    [3.8799999999999994, 2.13],
+                    [5.91, 0.36],
+                    [5.430000000000001, 1.1],
+                    [2.6999999999999997, 2.83],
+                    [3.7199999999999998, 0.03],
+                    [4.11, 2.28],
+                    [0.53, 2.36],
+                    [0.89, 3.4299999999999997],
+                    [5.800000000000001, 3.84],
+                    [1.3900000000000001, 1.08],
+                    [3.2199999999999998, 0.9800000000000001],
+                    [0.47, 1.6],
+                    [0.03999999999999998, 0.7999999999999999],
+                    [0.89, 3.28],
+                    [2.9299999999999997, 2.04],
                     [1.07, 1.11],
                     [2.65, 0.63],
                     [0.27, 0.66],
