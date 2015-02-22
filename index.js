@@ -331,12 +331,16 @@ $(document).ready((function (schema) {
      * 
      */
     var computeDistance = function (actions) {
-        var total = 0,
-            weightTotal = Object.keys(stageCurrent.buildings).reduce(function (a, b) {
-                return a + Number(stageCurrent.buildings[b].weight);
-            }, 0),
+        var weightTotal = Object.keys(stageCurrent.buildings).reduce(function (a, b) {
+            return a + Number(stageCurrent.buildings[b].weight);
+        }, 0),
             weightCurrent = weightTotal + droneWeight,
-            distance, start, end, i;
+            total, distance, start, end, i;
+
+        start = stageCurrent.source;
+        end = stageCurrent.buildings[actions[0]];
+        distance = distanceBetween(start, end.position);
+        total = distance * weightCurrent;
 
         for (i = 0; i < actions.length - 1; i += 1) {
             start = stageCurrent.buildings[actions[i]];
